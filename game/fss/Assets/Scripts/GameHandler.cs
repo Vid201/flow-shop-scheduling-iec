@@ -4,13 +4,68 @@ using UnityEngine;
 
 public class GameHandler : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    [SerializeField]
+    private GameObject blockPrefab;
+
+    struct Job {
+        public int jobId, machineId;
+        public float width;
+        public Color color;
+
+        public Job(int jobId, int machineId, float width, Color color) {
+            this.jobId = jobId;
+            this.machineId = machineId;
+            this.width = width;
+            this.color = color;
+        }
+    };
+
+    private int numberOfMachines, numberOfJobs;
+    private List<List<Job>> jobs = new List<List<Job>>();
+
+    void SpawnBlocks() {
+        for (int i = 0; i < numberOfJobs; ++i) {
+            for (int j = 0; j < numberOfMachines; ++j) {
+                var position = new Vector3(0, 0, 0);
+                var gameObject = GameObject.Instantiate(blockPrefab, position, Quaternion.identity);
+                gameObject.GetComponent<SpriteRenderer>().color = jobs[i][j].color;
+            }
+        }
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+        // TODO: generate new random game
+        numberOfMachines = 3;
+        numberOfJobs = 3;
+
+        for (int i = 0; i < numberOfJobs; ++i)
+        {
+            var currentJobs = new List<Job>();
+            var currentColor = GenerateColor();
+
+            for (int j = 0; j < numberOfMachines; ++j) {
+                currentJobs.Add(new Job(i, j, GenerateWidth(), currentColor));
+            }
+
+            jobs.Add(currentJobs);
+        }
+
+        SpawnBlocks();
+    }
+
+    float GenerateWidth() {
+        return Random.Range(3f, 6f);
+    }
+
+    Color GenerateColor() {
+        return new Color(
+            Random.Range(0f, 1f),
+            Random.Range(0f, 1f),
+            Random.Range(0f, 1f)
+        );
+    }
+
     void Update()
     {
         
