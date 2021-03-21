@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-    private bool moving;
+    private bool moving, onBoard;
     private Vector3 startPosition;
     public int machineId, jobId;
+    private float machinePositionY;
+    private Board board;
 
     void Start() {
         startPosition = transform.position;
+        onBoard = false;
     }
 
     public void OnMouseDown() {
@@ -18,7 +21,17 @@ public class Block : MonoBehaviour
 
     public void OnMouseUp() {
         moving = false;
-        transform.position = startPosition;
+        if (onBoard == false)
+        {
+            transform.position = startPosition;
+            board.RemoveJob(jobId);
+        } else
+        {
+            Vector3 tmp = transform.position;
+            tmp.y = machinePositionY;
+            transform.position = tmp;
+            board.AddJob(jobId, transform.position.x, transform.position.x + transform.localScale.x);
+        }
     }
 
     void Update() {
@@ -33,7 +46,15 @@ public class Block : MonoBehaviour
         int otherMachineId = collider.gameObject.GetComponent<Board>().machineId;
         if (otherMachineId == machineId)
         {
-            Debug.Log("correct");
+            onBoard = true;
+            Vector3 tmp = collider.gameObject.GetComponent<Transform>().position;
+            machinePositionY = tmp.y;
+            board = collider.gameObject.GetComponent<Board>();
         }
+    }
+
+    private void OnTriggerExit2D(Collider2D collider)
+    {
+        onBoard = false;
     }
 }
