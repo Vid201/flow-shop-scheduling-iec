@@ -333,3 +333,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockPrefab: {fileID: 7208429085642876633, guid: ff97843c7becc7149bfd6c22727ad558, type: 3}
+  boardPrefab: {fileID: 5722327736356852245, guid: 372e3e605b3b243428845083a49faff8, type: 3}

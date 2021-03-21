@@ -7,15 +7,20 @@ public class GameHandler : MonoBehaviour
     [SerializeField]
     private GameObject blockPrefab;
 
+    [SerializeField]
+    private GameObject boardPrefab;
+
+    private float height, width;
+
     struct Job {
         public int jobId, machineId;
-        public float width;
+        public Vector3 scale;
         public Color color;
 
-        public Job(int jobId, int machineId, float width, Color color) {
+        public Job(int jobId, int machineId, Vector3 scale, Color color) {
             this.jobId = jobId;
             this.machineId = machineId;
-            this.width = width;
+            this.scale = scale;
             this.color = color;
         }
     };
@@ -23,25 +28,35 @@ public class GameHandler : MonoBehaviour
     private int numberOfMachines, numberOfJobs;
     private List<List<Job>> jobs = new List<List<Job>>();
 
-    void SpawnBlocks() {
-        Camera camera = Camera.main;
-        float height = 2f * camera.orthographicSize;
-        float width = height * camera.aspect;
+    void SpawnBoard() {
+        for (int i = 0; i < numberOfMachines; ++i)
+        {
+            var position = new Vector3(0, height / 2 - (height / 2) / (numberOfMachines + 1) * (i + 1), 0);
+            var gameObject = GameObject.Instantiate(boardPrefab, position, Quaternion.identity);
+            gameObject.GetComponent<SpriteRenderer>().color = Color.black;
+        }
+    }
 
+    void SpawnBlocks() {
         for (int i = 0; i < numberOfJobs; ++i) {
             for (int j = 0; j < numberOfMachines; ++j) {
-                var position = new Vector3(width / numberOfJobs * i - width / numberOfJobs, (-height / 2 + (height / 2) / numberOfMachines) + (height / 2) / numberOfMachines * j, 0);
+                var position = new Vector3(-width / 2 + width / (numberOfJobs + 1) * (i + 1), 0 - (height / 2) / (numberOfMachines + 1) * (j + 1), 0);
                 var gameObject = GameObject.Instantiate(blockPrefab, position, Quaternion.identity);
                 gameObject.GetComponent<SpriteRenderer>().color = jobs[i][j].color;
+                gameObject.GetComponent<Transform>().localScale = Vector3.Scale(jobs[i][j].scale, gameObject.GetComponent<Transform>().localScale);
             }
         }
     }
 
     void Start()
     {
+        Camera camera = Camera.main;
+        height = 2f * camera.orthographicSize;
+        width = height * camera.aspect;
+
         // TODO: generate new random game
         numberOfMachines = 3;
-        numberOfJobs = 3;
+        numberOfJobs = 5;
 
         for (int i = 0; i < numberOfJobs; ++i)
         {
@@ -49,17 +64,22 @@ public class GameHandler : MonoBehaviour
             var currentColor = GenerateColor();
 
             for (int j = 0; j < numberOfMachines; ++j) {
-                currentJobs.Add(new Job(i, j, GenerateWidth(), currentColor));
+                currentJobs.Add(new Job(i, j, GenerateScale(), currentColor));
             }
 
             jobs.Add(currentJobs);
         }
 
+        SpawnBoard();
         SpawnBlocks();
     }
 
-    float GenerateWidth() {
-        return Random.Range(3f, 6f);
+    Vector3 GenerateScale() {
+        return new Vector3(
+            Random.Range(0.2f, 1.0f),
+            1.0f,
+            1.0f
+        );
     }
 
     Color GenerateColor() {
