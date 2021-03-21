@@ -24,9 +24,13 @@ public class GameHandler : MonoBehaviour
     private List<List<Job>> jobs = new List<List<Job>>();
 
     void SpawnBlocks() {
+        Camera camera = Camera.main;
+        float height = 2f * camera.orthographicSize;
+        float width = height * camera.aspect;
+
         for (int i = 0; i < numberOfJobs; ++i) {
             for (int j = 0; j < numberOfMachines; ++j) {
-                var position = new Vector3(0, 0, 0);
+                var position = new Vector3(width / numberOfJobs * i - width / numberOfJobs, (-height / 2 + (height / 2) / numberOfMachines) + (height / 2) / numberOfMachines * j, 0);
                 var gameObject = GameObject.Instantiate(blockPrefab, position, Quaternion.identity);
                 gameObject.GetComponent<SpriteRenderer>().color = jobs[i][j].color;
             }
