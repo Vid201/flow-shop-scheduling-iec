@@ -34,6 +34,7 @@ public class GameHandler : MonoBehaviour
             var position = new Vector3(0, height / 2 - (height / 2) / (numberOfMachines + 1) * (i + 1), 0);
             var gameObject = GameObject.Instantiate(boardPrefab, position, Quaternion.identity);
             gameObject.GetComponent<SpriteRenderer>().color = Color.black;
+            gameObject.GetComponent<Board>().machineId = i;
         }
     }
 
@@ -44,6 +45,8 @@ public class GameHandler : MonoBehaviour
                 var gameObject = GameObject.Instantiate(blockPrefab, position, Quaternion.identity);
                 gameObject.GetComponent<SpriteRenderer>().color = jobs[i][j].color;
                 gameObject.GetComponent<Transform>().localScale = Vector3.Scale(jobs[i][j].scale, gameObject.GetComponent<Transform>().localScale);
+                gameObject.GetComponent<Block>().machineId = jobs[i][j].machineId;
+                gameObject.GetComponent<Block>().jobId = jobs[i][j].jobId;
             }
         }
     }
