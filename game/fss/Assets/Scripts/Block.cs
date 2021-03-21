@@ -7,12 +7,13 @@ public class Block : MonoBehaviour
     private bool moving, onBoard;
     private Vector3 startPosition;
     public int machineId, jobId;
-    private float machinePositionY;
+    private float width, machinePositionY;
     private Board board;
 
     void Start() {
         startPosition = transform.position;
         onBoard = false;
+        width = GetComponent<SpriteRenderer>().bounds.size.x;
     }
 
     public void OnMouseDown() {
@@ -24,13 +25,23 @@ public class Block : MonoBehaviour
         if (onBoard == false)
         {
             transform.position = startPosition;
-            board.RemoveJob(jobId);
+
+            if (board)
+            {   
+                board.RemoveJob(jobId);
+            }
         } else
         {
             Vector3 tmp = transform.position;
             tmp.y = machinePositionY;
-            transform.position = tmp;
-            board.AddJob(jobId, transform.position.x, transform.position.x + transform.localScale.x);
+
+            if (board.AddJob(jobId, transform.position.x - width / 2, transform.position.x + width / 2))
+            {
+                transform.position = tmp;
+            } else
+            {
+                transform.position = startPosition;
+            }
         }
     }
 
