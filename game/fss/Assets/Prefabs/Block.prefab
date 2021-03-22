@@ -144,5 +144,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fa258c75290a7544a8dc24b0e1843e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  suggestionPrefab: {fileID: 2185321722816258592, guid: ac66acdf4780194429a59272fdb0ad63, type: 3}
   machineId: 0
   jobId: 0

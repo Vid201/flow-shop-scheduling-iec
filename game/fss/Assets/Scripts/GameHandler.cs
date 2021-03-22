@@ -12,6 +12,9 @@ public class GameHandler : MonoBehaviour
 
     private float height, width;
 
+    public static float BoardMinX, BoardMaxX;
+    public static Dictionary<int, float> BoardPositions = new Dictionary<int, float>();
+
     struct Job {
         public int jobId, machineId;
         public Vector3 scale;
@@ -31,10 +34,19 @@ public class GameHandler : MonoBehaviour
     void SpawnBoard() {
         for (int i = 0; i < numberOfMachines; ++i)
         {
-            var position = new Vector3(0, height / 2 - (height / 2) / (numberOfMachines + 1) * (i + 1), 0);
+            var positionY = height / 2 - (height / 2) / (numberOfMachines + 1) * (i + 1);
+            var position = new Vector3(0, positionY, 0);
             var gameObject = GameObject.Instantiate(boardPrefab, position, Quaternion.identity);
             gameObject.GetComponent<SpriteRenderer>().color = Color.black;
             gameObject.GetComponent<Board>().machineId = i;
+
+            if (i == 0)
+            {
+                BoardMinX = gameObject.GetComponent<SpriteRenderer>().bounds.min.x;
+                BoardMaxX = gameObject.GetComponent<SpriteRenderer>().bounds.max.x;
+            }
+
+            BoardPositions.Add(i, positionY);
         }
     }
 
@@ -91,10 +103,5 @@ public class GameHandler : MonoBehaviour
             Random.Range(0f, 1f),
             Random.Range(0f, 1f)
         );
-    }
-
-    void Update()
-    {
-        
     }
 }

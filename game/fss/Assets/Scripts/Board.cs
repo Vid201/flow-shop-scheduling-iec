@@ -80,4 +80,43 @@ public class Board : MonoBehaviour
 
         return false;
     }
+
+    public static List<float> GetSuggestions(int machineId, int jobId) {
+        List<Location> suggestions = new List<Location>();
+        float lowerBound = GameHandler.BoardMinX, upperBound = GameHandler.BoardMaxX;
+
+        for (int i = machineId - 1; i >= 0; --i)
+        {
+            if (activeJobs[i].ContainsKey(jobId)) {
+                lowerBound = activeJobs[i][jobId].x2;
+                break;
+            }
+        }
+
+        for (int i = machineId + 1; i < activeJobs.Count; ++i)
+        {
+            if (activeJobs[i].ContainsKey(jobId))
+            {
+                upperBound = activeJobs[i][jobId].x1;
+                break;
+            }
+        }
+
+        List<float> values = new List<float>();
+        values.Add(lowerBound);
+        values.Add(upperBound);
+
+        foreach (KeyValuePair<int, Location> entry in activeJobs[machineId]) {
+            values.Add(entry.Value.x1);
+            values.Add(entry.Value.x2);
+        }
+
+        values.Sort();
+
+        for (int i = 0; i < values.Count; i += 2) {
+            suggestions.Add(new Location(values[i], values[i+1]));
+        }
+
+        return values;
+    }
 }
