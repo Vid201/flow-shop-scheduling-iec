@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameHandler : MonoBehaviour
 {
@@ -9,6 +10,21 @@ public class GameHandler : MonoBehaviour
 
     [SerializeField]
     private GameObject boardPrefab;
+
+    [SerializeField]
+    private Text noticeText;
+
+    [SerializeField]
+    private int MIN_MACHINES;
+
+    [SerializeField]
+    private int MAX_MACHINES;
+
+    [SerializeField]
+    private int MIN_JOBS;
+
+    [SerializeField]
+    private int MAX_JOBS;
 
     private float height, width;
 
@@ -39,6 +55,7 @@ public class GameHandler : MonoBehaviour
             var gameObject = GameObject.Instantiate(boardPrefab, position, Quaternion.identity);
             gameObject.GetComponent<SpriteRenderer>().color = Color.black;
             gameObject.GetComponent<Board>().machineId = i;
+            gameObject.GetComponent<Board>().noticeText = noticeText;
 
             if (i == 0)
             {
@@ -62,16 +79,15 @@ public class GameHandler : MonoBehaviour
             }
         }
     }
-
+    
     void Start()
     {
         Camera camera = Camera.main;
         height = 2f * camera.orthographicSize;
         width = height * camera.aspect;
 
-        // TODO: generate new random game
-        numberOfMachines = 3;
-        numberOfJobs = 5;
+        numberOfMachines = Random.Range(MIN_MACHINES, MAX_MACHINES);
+        numberOfJobs = Random.Range(MIN_JOBS, MAX_JOBS);
 
         for (int i = 0; i < numberOfJobs; ++i)
         {
@@ -91,7 +107,7 @@ public class GameHandler : MonoBehaviour
 
     Vector3 GenerateScale() {
         return new Vector3(
-            Random.Range(0.2f, 1.0f),
+            Random.Range(0.25f, 1.50f),
             1.0f,
             1.0f
         );
@@ -104,4 +120,6 @@ public class GameHandler : MonoBehaviour
             Random.Range(0f, 1f)
         );
     }
+
+
 }

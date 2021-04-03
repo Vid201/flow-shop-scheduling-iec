@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using System.Linq;
 
 public class Board : MonoBehaviour
 {
@@ -15,19 +17,68 @@ public class Board : MonoBehaviour
 
     public int machineId;
     private static Dictionary<int, Dictionary<int, Location>> activeJobs = new Dictionary<int, Dictionary<int, Location>>();
+    public Text noticeText;
 
     void Start()
     {
         activeJobs[machineId] = new Dictionary<int, Location>();
     }
 
+    public void Validate()
+    {
+        List<List<KeyValuePair<int, Location>>> jobsOrder = new List<List<KeyValuePair<int, Location>>>();
+        bool correct = true;
+
+        for (int i = 0; i < activeJobs.Count; i++)
+        {
+            var myList = activeJobs[i].ToList();
+            myList.Sort(
+                delegate (KeyValuePair<int, Location> pair1,
+                KeyValuePair<int, Location> pair2)
+                {
+                    return pair1.Value.x1.CompareTo(pair2.Value.x1);
+                }
+            );
+            jobsOrder.Add(myList);
+        }
+
+        for (int j = 1; j < jobsOrder.Count; j++)
+        {
+            if (jobsOrder[j].Count != jobsOrder[0].Count)
+            {
+                correct = false;
+                break;
+            }
+
+            for (int i = 0; i < jobsOrder[0].Count; i++)
+            {
+                if (jobsOrder[0][i].Key != jobsOrder[j][i].Key)
+                {
+                    correct = false;
+                    break;
+                }
+            }
+
+            if (!correct)
+            {
+                break;
+            }
+        }
+
+        noticeText.color = correct ? Color.white : Color.red;
+    }
+
     public bool AddJob(int jobId, float x1, float x2) {
         bool free = true;
 
+        if (x1 < GameHandler.BoardMinX || x2 > GameHandler.BoardMaxX) {
+            return false;
+        }
+
         foreach (KeyValuePair<int, Location> entry in activeJobs[machineId])
         {
-            if (entry.Key == jobId)
-            {
+            {            if (entry.Key == jobId)
+
                 continue;
             }
 
@@ -50,6 +101,8 @@ public class Board : MonoBehaviour
         }
         activeJobs[machineId].Add(jobId, new Location(x1, x2));
 
+        Validate();
+
         return true;
     }
 
@@ -57,6 +110,7 @@ public class Board : MonoBehaviour
         if (activeJobs[machineId].ContainsKey(jobId))
         {
             activeJobs[machineId].Remove(jobId);
+            Validate();
         }
     }
 
@@ -81,8 +135,7 @@ public class Board : MonoBehaviour
         return false;
     }
 
-    public static List<float> GetSuggestions(int machineId, int jobId) {
-        List<Location> suggestions = new List<Location>();
+    public static List<float> GetSuggestions(int machineId, int jobId, float width) {
         float lowerBound = GameHandler.BoardMinX, upperBound = GameHandler.BoardMaxX;
 
         for (int i = machineId - 1; i >= 0; --i)
@@ -103,6 +156,7 @@ public class Board : MonoBehaviour
         }
 
         List<float> values = new List<float>();
+        List<float> suggestions = new List<float>();
         values.Add(lowerBound);
         values.Add(upperBound);
 
@@ -114,9 +168,13 @@ public class Board : MonoBehaviour
         values.Sort();
 
         for (int i = 0; i < values.Count; i += 2) {
-            suggestions.Add(new Location(values[i], values[i+1]));
+            if (width <= values[i + 1] - values[i])
+            {
+                suggestions.Add(values[i]);
+                suggestions.Add(values[i + 1]);
+            }
         }
 
-        return values;
+        return suggestions;
     }
 }

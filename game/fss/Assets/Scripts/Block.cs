@@ -33,7 +33,7 @@ public class Block : MonoBehaviour
 
     public void OnMouseDown() {
         moving = true;
-        List<float> suggestionPositions = Board.GetSuggestions(machineId, jobId);
+        List<float> suggestionPositions = Board.GetSuggestions(machineId, jobId, width);
         ShowSuggestions(suggestionPositions);
     }
 
