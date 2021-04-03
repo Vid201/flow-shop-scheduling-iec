@@ -15,6 +15,15 @@ public class GameHandler : MonoBehaviour
     private Text noticeText;
 
     [SerializeField]
+    private Text resultText;
+
+    [SerializeField]
+    private Text makespanText;
+
+    [SerializeField]
+    private Text gameoverText;
+
+    [SerializeField]
     private int MIN_MACHINES;
 
     [SerializeField]
@@ -56,6 +65,10 @@ public class GameHandler : MonoBehaviour
             gameObject.GetComponent<SpriteRenderer>().color = Color.black;
             gameObject.GetComponent<Board>().machineId = i;
             gameObject.GetComponent<Board>().noticeText = noticeText;
+            gameObject.GetComponent<Board>().resultText = resultText;
+            gameObject.GetComponent<Board>().makespanText = makespanText;
+            gameObject.GetComponent<Board>().gameoverText = gameoverText;
+            gameObject.GetComponent<Board>().allJobs = numberOfMachines * numberOfJobs;
 
             if (i == 0)
             {

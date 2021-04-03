@@ -32,12 +32,22 @@ public class Block : MonoBehaviour
     }
 
     public void OnMouseDown() {
+        if (Board.gameOver)
+        {
+            return;
+        }
+
         moving = true;
         List<float> suggestionPositions = Board.GetSuggestions(machineId, jobId, width);
         ShowSuggestions(suggestionPositions);
     }
 
     public void OnMouseUp() {
+        if (Board.gameOver)
+        {
+            return;
+        }
+
         moving = false;
 
         foreach (GameObject suggestion in suggestions) {
