@@ -630,6 +630,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1061195138}
   - component: {fileID: 1061195139}
+  - component: {fileID: 1061195140}
   m_Layer: 0
   m_Name: GameHandler
   m_TagString: Untagged
@@ -674,6 +675,18 @@ MonoBehaviour:
   MAX_MACHINES: 4
   MIN_JOBS: 3
   MAX_JOBS: 7
+--- !u!114 &1061195140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1061195137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a8ba439c01646e42bcd6ede8b1c9386, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1125350086
 GameObject:
   m_ObjectHideFlags: 0
