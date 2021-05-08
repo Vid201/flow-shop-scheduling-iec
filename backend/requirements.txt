@@ -5,3 +5,4 @@ itsdangerous==1.1.0
 Jinja2==2.11.2
 MarkupSafe @ file:///tmp/build/80754af9/markupsafe_1594371495811/work
 Werkzeug==1.0.1
+numpy==1.20.2
