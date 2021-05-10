@@ -38,7 +38,7 @@ class PermutationFlowShopScheduling:
 
 class MaxMinAntSystem:
     # https://www.researchgate.net/profile/Thomas-Stuetzle/publication/2593620_An_Ant_Approach_to_the_Flow_Shop_Problem/links/0046353a2c198330ee000000/An-Ant-Approach-to-the-Flow-Shop-Problem.pdf
-    def __init__(self, pfss, number_of_ants=10, p0=0.9, min_max_ratio=5, persistence_rate=0.75, max_iter=100, max_stagnation=10):
+    def __init__(self, pfss, number_of_ants=10, p0=0.9, min_max_ratio=5, persistence_rate=0.75, max_iter=100, max_stagnation=10, pheromone_multiplier=5):
         self.pfss = pfss
         self.number_of_ants = number_of_ants
         self.p0 = p0
@@ -46,9 +46,11 @@ class MaxMinAntSystem:
         self.persistence_rate = persistence_rate
         self.max_iter = max_iter
         self.max_stagnation = max_stagnation
+        self.pheromone_multiplier = pheromone_multiplier
         self.pheromone = np.zeros((pfss.number_of_jobs, pfss.number_of_jobs))
         self.best_solution = None
         self.best_evaluation = INF
+        self.tmp_best_evaluation = INF
         self.iter = 0
         self.stagnation_iter = 0
         self._init_pheromone()
@@ -104,30 +106,39 @@ class MaxMinAntSystem:
 
         return solution
 
-    def run(self):
-        best_evaluation = INF
+    def _run_iteration(self):
+        solutions = []
+        evaluations = []
 
-        while True:
-            solutions = []
-            evaluations = []
+        for _ in range(self.number_of_ants):
+            solution = self._construct_solution_from_pheromone()
+            evaluation = self.pfss.evaluate_solution(solution)
 
-            for _ in range(self.number_of_ants):
-                solution = self._construct_solution_from_pheromone()
-                evaluation = self.pfss.evaluate_solution(solution)
+            if evaluation < self.tmp_best_evaluation:
+                self.best_solution = solution
+                self.tmp_best_evaluation = evaluation
 
-                if evaluation < best_evaluation:
-                    self.best_solution = solution
-                    best_evaluation = evaluation
+            solutions.append(solution)
+            evaluations.append(evaluation)
 
-                solutions.append(solution)
-                evaluations.append(evaluation)
+        self._update_pheromone(solutions, evaluations)
+        self.iter += 1
 
-            self._update_pheromone(solutions, evaluations)
+    def run(self, iters=None):
+        if iters is None:
+            while True:
+                self._run_iteration()
+                if self.iter > self.max_iter:
+                    break
+        else:
+            for _ in range(iters):
+                self._run_iteration()
 
-            self.iter += 1
-            if self.iter > self.max_iter:
-                break
-
+    def change_pheromone(self, job_id, position, action=True):
+        if action:
+            self.pheromone[job_id, position] *= self.pheromone_multiplier
+        else:
+            self.pheromone[job_id, position] /= self.pheromone_multiplier
 
 if __name__ == "__main__":
     np.random.seed(SEED)

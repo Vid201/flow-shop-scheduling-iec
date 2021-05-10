@@ -28,6 +28,25 @@ public class Board : MonoBehaviour
         Validate();
     }
 
+    public int GetJobIndex(int machineId, int jobId) {
+        var myList = activeJobs[machineId].ToList();
+        myList.Sort(
+            delegate (KeyValuePair<int, Location> pair1,
+            KeyValuePair<int, Location> pair2)
+            {
+                return pair1.Value.x1.CompareTo(pair2.Value.x1);
+            }
+        );
+        for (int i = 0; i < myList.Count; ++i)
+        {
+            if (myList[i].Key == jobId) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     public void Validate()
     {
         List<List<KeyValuePair<int, Location>>> jobsOrder = new List<List<KeyValuePair<int, Location>>>();
@@ -105,8 +124,8 @@ public class Board : MonoBehaviour
 
         foreach (KeyValuePair<int, Location> entry in activeJobs[machineId])
         {
-            {            if (entry.Key == jobId)
-
+            if (entry.Key == jobId)
+            {
                 continue;
             }
 
@@ -134,12 +153,15 @@ public class Board : MonoBehaviour
         return true;
     }
 
-    public void RemoveJob(int jobId) {
+    public bool RemoveJob(int jobId) {
         if (activeJobs[machineId].ContainsKey(jobId))
         {
             activeJobs[machineId].Remove(jobId);
+            return true;
             Validate();
         }
+
+        return false;
     }
 
     bool CheckOtherMachines(int jobId, float x1, float x2) {

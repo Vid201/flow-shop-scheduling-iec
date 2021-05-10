@@ -14,6 +14,8 @@ public class Block : MonoBehaviour
     private Board board;
     private List<GameObject> suggestions = new List<GameObject>();
 
+    public GameServer gameServer;
+
     void Start() {
         startPosition = transform.position;
         onBoard = false;
@@ -60,8 +62,11 @@ public class Block : MonoBehaviour
             transform.position = startPosition;
 
             if (board)
-            {   
-                board.RemoveJob(jobId);
+            {
+                int jobIndex = board.GetJobIndex(machineId, jobId);
+                if (board.RemoveJob(jobId)) {
+                    gameServer.sendMove("remove", jobId, jobIndex);
+                }
             }
         } else
         {
@@ -71,6 +76,7 @@ public class Block : MonoBehaviour
             if (board.AddJob(jobId, transform.position.x - width / 2, transform.position.x + width / 2))
             {
                 transform.position = tmp;
+                gameServer.sendMove("add", jobId, board.GetJobIndex(machineId, jobId));
             } else
             {
                 transform.position = startPosition;
@@ -99,6 +105,10 @@ public class Block : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collider)
     {
-        onBoard = false;
+        int otherMachineId = collider.gameObject.GetComponent<Board>().machineId;
+        if (otherMachineId == machineId)
+        {
+            onBoard = false;
+        }
     }
 }

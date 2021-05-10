@@ -85,12 +85,13 @@ public class GameHandler : MonoBehaviour
     void SpawnBlocks() {
         for (int i = 0; i < numberOfJobs; ++i) {
             for (int j = 0; j < numberOfMachines; ++j) {
-                var position = new Vector3(-width / 2 + width / (numberOfJobs + 1) * (i + 1), 0 - (height / 2) / (numberOfMachines + 1) * (j + 1), 0);
+                var position = new Vector3(-width / 2 + width / (numberOfJobs + 1) * (i + 1), 0 - (height / 2) / (numberOfMachines + 1) * (j), 0);
                 var gameObject = GameObject.Instantiate(blockPrefab, position, Quaternion.identity);
                 gameObject.GetComponent<SpriteRenderer>().color = jobs[i][j].color;
                 gameObject.GetComponent<Transform>().localScale = Vector3.Scale(jobs[i][j].scale, gameObject.GetComponent<Transform>().localScale);
                 gameObject.GetComponent<Block>().machineId = jobs[i][j].machineId;
                 gameObject.GetComponent<Block>().jobId = jobs[i][j].jobId;
+                gameObject.GetComponent<Block>().gameServer = gameServer;
             }
         }
     }
@@ -116,18 +117,22 @@ public class GameHandler : MonoBehaviour
             jobs.Add(currentJobs);
         }
 
+        gameServer = gameObject.GetComponent<GameServer>();
+
         SpawnBoard();
         SpawnBlocks();
 
         string times = "";
+        List<Color> colors = new List<Color>();
 
         for (int i = 0; i < numberOfJobs; ++i) {
             for (int j = 0; j < numberOfMachines; ++j) {
                 times += jobs[i][j].scale.x + " ";
             }
+            colors.Add(jobs[i][0].color);
         }
 
-        gameObject.GetComponent<GameServer>().setData(numberOfJobs, numberOfMachines, times);
+        gameServer.setData(numberOfJobs, numberOfMachines, times, colors, -width / 2, -height / 2);
     }
 
     Vector3 GenerateScale() {
