@@ -56,6 +56,8 @@ public class GameHandler : MonoBehaviour
     private int numberOfMachines, numberOfJobs;
     private List<List<Job>> jobs = new List<List<Job>>();
 
+    private GameServer gameServer;
+
     void SpawnBoard() {
         for (int i = 0; i < numberOfMachines; ++i)
         {
@@ -116,6 +118,16 @@ public class GameHandler : MonoBehaviour
 
         SpawnBoard();
         SpawnBlocks();
+
+        string times = "";
+
+        for (int i = 0; i < numberOfJobs; ++i) {
+            for (int j = 0; j < numberOfMachines; ++j) {
+                times += jobs[i][j].scale.x + " ";
+            }
+        }
+
+        gameObject.GetComponent<GameServer>().setData(numberOfJobs, numberOfMachines, times);
     }
 
     Vector3 GenerateScale() {
@@ -132,7 +144,5 @@ public class GameHandler : MonoBehaviour
             Random.Range(0f, 1f),
             Random.Range(0f, 1f)
         );
-    }
-
-
+    }   
 }
