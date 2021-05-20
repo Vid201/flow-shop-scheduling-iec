@@ -673,7 +673,7 @@ MonoBehaviour:
   gameoverText: {fileID: 1593095768}
   MIN_MACHINES: 2
   MAX_MACHINES: 4
-  MIN_JOBS: 8
+  MIN_JOBS: 9
   MAX_JOBS: 10
 --- !u!114 &1061195140
 MonoBehaviour:

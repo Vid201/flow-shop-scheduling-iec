@@ -52,7 +52,7 @@ class PermutationFlowShopScheduling:
 
 class MaxMinAntSystem:
     # https://www.researchgate.net/profile/Thomas-Stuetzle/publication/2593620_An_Ant_Approach_to_the_Flow_Shop_Problem/links/0046353a2c198330ee000000/An-Ant-Approach-to-the-Flow-Shop-Problem.pdf
-    def __init__(self, pfss, number_of_ants=10, p0=0.9, min_max_ratio=5, persistence_rate=0.75, max_iter=100, max_stagnation=10, pheromone_multiplier=5):
+    def __init__(self, pfss, number_of_ants=10, p0=0.9, min_max_ratio=5, persistence_rate=0.75, max_iter=100, max_stagnation=5, pheromone_multiplier=5):
         self.pfss = pfss
         self.number_of_ants = number_of_ants
         self.p0 = p0
@@ -157,8 +157,6 @@ class MaxMinAntSystem:
 
 
 if __name__ == "__main__":
-    # np.random.seed(SEED)
-
     pfss = PermutationFlowShopScheduling(
         number_of_machines=4, number_of_jobs=9)
     print(
@@ -173,6 +171,8 @@ if __name__ == "__main__":
     print(f"Optimal solution: {optimal_solution}")
     print(f"Time elapsed: {end_time - start_time} s")
 
+    np.random.seed(SEED)
+
     start_time2 = time.time()
 
     mmas = MaxMinAntSystem(pfss)
@@ -182,3 +182,15 @@ if __name__ == "__main__":
 
     print(f"Best solution found my MMAS: {mmas.get_best_solution()}")
     print(f"Time elapsed: {end_time2 - start_time2} s")
+
+    np.random.seed(SEED)
+
+    start_time3 = time.time()
+
+    mmas2 = MaxMinAntSystem(pfss)
+    mmas2.run()
+
+    end_time3 = time.time()
+
+    print(f"Best solution found my MMAS: {mmas2.get_best_solution()}")
+    print(f"Time elapsed: {end_time3 - start_time3} s")

@@ -10,10 +10,10 @@ public class GameServer : MonoBehaviour
 {
     class StartGameEvent : UnityEvent<int, int, string> { }
     class SendMoveEvent : UnityEvent<string, int, int> { }
-    class GameData { public int gameId; public string suggestion; }
+    class GameData { public string gameId; public string suggestion; }
     private static string WEB_SERVER_URL = "http://127.0.0.1:5000/";
 
-    private int gameId;
+    private string gameId;
     private List<Color> colors = new List<Color>();
     private float minX, minY;
 
@@ -68,7 +68,7 @@ public class GameServer : MonoBehaviour
             {
                 GameData gameData = JsonUtility.FromJson<GameData>(request.downloadHandler.text);
                 this.gameId = gameData.gameId;
-                gameIdText.text = "Game ID: " + this.gameId.ToString();
+                gameIdText.text = "Game ID: " + this.gameId;
                 DrawSuggestion(gameData.suggestion);
             }
         }
@@ -85,7 +85,7 @@ public class GameServer : MonoBehaviour
 
     private IEnumerator SendMove_Coroutine(string action, int jobId, int position)
     {
-        string uri = WEB_SERVER_URL + "move/" + this.gameId.ToString();
+        string uri = WEB_SERVER_URL + "move/" + this.gameId;
 
         WWWForm form = new WWWForm();
         form.AddField("action", action);
