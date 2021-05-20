@@ -4,7 +4,7 @@ import numpy as np
 
 app = Flask(__name__)
 
-NUMBER_OF_ITERATIONS = 3
+NUMBER_OF_ITERATIONS = 1
 
 counter = 0
 games = {}
@@ -22,9 +22,11 @@ def game():
     number_of_jobs = int(request.form['numberOfJobs'])
     number_of_machines = int(request.form['numberOfMachines'])
     times_str = request.form['times'].strip()
-    times = np.asarray(list(map(float, times_str.split(' ')))).reshape((number_of_jobs, number_of_machines)) 
+    times = np.asarray(list(map(float, times_str.split(' ')))).reshape(
+        (number_of_jobs, number_of_machines))
 
-    pfss = PermutationFlowShopScheduling(number_of_machines=number_of_machines, number_of_jobs=number_of_jobs, times=times)
+    pfss = PermutationFlowShopScheduling(
+        number_of_machines=number_of_machines, number_of_jobs=number_of_jobs, times=times)
     mmas = MaxMinAntSystem(pfss)
 
     games[counter] = mmas
@@ -33,7 +35,7 @@ def game():
     games[counter - 1].run(iters=NUMBER_OF_ITERATIONS)
 
     return jsonify({
-        "gameId" : counter - 1,
+        "gameId": counter - 1,
         "suggestion": ' '.join(map(str, games[counter - 1].get_best_solution()[0]))
     })
 
@@ -49,7 +51,8 @@ def move(game_id):
     job_id = int(request.form['jobId'])
     index = int(request.form['index'])
 
-    games[game_id].change_pheromone(job_id, index, True if action == "add" else False)
+    games[game_id].change_pheromone(
+        job_id, index, True if action == "add" else False)
     games[game_id].run(iters=NUMBER_OF_ITERATIONS)
 
     return jsonify({

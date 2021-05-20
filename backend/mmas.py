@@ -1,5 +1,6 @@
-import numpy as np
 import time
+import numpy as np
+from sympy.utilities.iterables import multiset_permutations
 
 SEED = 42
 INF = np.inf
@@ -34,6 +35,19 @@ class PermutationFlowShopScheduling:
                 makespan = max(makespan, times[j])
 
         return makespan
+
+    def get_optimal_solution(self):
+        inds = np.arange(self.number_of_jobs)
+        sol = None
+        min_makespan = -1
+
+        for p in multiset_permutations(inds):
+            makespan = self.evaluate_solution(p)
+            if min_makespan == -1 or makespan < min_makespan:
+                min_makespan = makespan
+                sol = p
+
+        return sol, min_makespan
 
 
 class MaxMinAntSystem:
@@ -128,6 +142,7 @@ class MaxMinAntSystem:
         if iters is None:
             while True:
                 self._run_iteration()
+                print(self.iter, self.get_best_solution())
                 if self.iter > self.max_iter:
                     break
         else:
@@ -140,20 +155,30 @@ class MaxMinAntSystem:
         else:
             self.pheromone[job_id, position] /= self.pheromone_multiplier
 
+
 if __name__ == "__main__":
-    np.random.seed(SEED)
+    # np.random.seed(SEED)
 
     pfss = PermutationFlowShopScheduling(
-        number_of_machines=4, number_of_jobs=15)
+        number_of_machines=4, number_of_jobs=9)
     print(
         f"Problem representation\nnumber of machines: {pfss.number_of_machines}\nnumber of jobs: {pfss.number_of_jobs}\ntimes: {pfss.times}")
 
     start_time = time.time()
 
-    mmas = MaxMinAntSystem(pfss)
-    mmas.run()
+    optimal_solution = pfss.get_optimal_solution()
 
     end_time = time.time()
 
-    print(f"Best solution: {mmas.get_best_solution()}")
+    print(f"Optimal solution: {optimal_solution}")
     print(f"Time elapsed: {end_time - start_time} s")
+
+    start_time2 = time.time()
+
+    mmas = MaxMinAntSystem(pfss)
+    mmas.run()
+
+    end_time2 = time.time()
+
+    print(f"Best solution found my MMAS: {mmas.get_best_solution()}")
+    print(f"Time elapsed: {end_time2 - start_time2} s")

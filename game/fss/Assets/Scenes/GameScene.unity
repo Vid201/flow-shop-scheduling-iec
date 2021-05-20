@@ -671,9 +671,9 @@ MonoBehaviour:
   resultText: {fileID: 683204736}
   makespanText: {fileID: 441391220}
   gameoverText: {fileID: 1593095768}
-  MIN_MACHINES: 5
-  MAX_MACHINES: 7
-  MIN_JOBS: 4
+  MIN_MACHINES: 2
+  MAX_MACHINES: 4
+  MIN_JOBS: 8
   MAX_JOBS: 10
 --- !u!114 &1061195140
 MonoBehaviour:
@@ -824,7 +824,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 149955427776324498, guid: ad2642557384aa04c8da6073f50160a0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3008.43
+      value: -2650
       objectReference: {fileID: 0}
     - target: {fileID: 149955427776324498, guid: ad2642557384aa04c8da6073f50160a0, type: 3}
       propertyPath: m_LocalPosition.z

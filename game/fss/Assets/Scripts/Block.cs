@@ -10,7 +10,8 @@ public class Block : MonoBehaviour
     private bool moving, onBoard;
     private Vector3 startPosition;
     public int machineId, jobId;
-    private float width, machinePositionY;
+    public float width;
+    public float machinePositionY;
     private Board board;
     private List<GameObject> suggestions = new List<GameObject>();
 
@@ -44,6 +45,10 @@ public class Block : MonoBehaviour
         ShowSuggestions(suggestionPositions);
     }
 
+    public void resetPosition() {
+        transform.position = startPosition;
+    }
+
     public void OnMouseUp() {
         if (Board.gameOver)
         {
@@ -59,12 +64,12 @@ public class Block : MonoBehaviour
 
         if (onBoard == false)
         {
-            transform.position = startPosition;
+            resetPosition();
 
             if (board)
             {
                 int jobIndex = board.GetJobIndex(machineId, jobId);
-                if (board.RemoveJob(jobId)) {
+                if (board.RemoveJob(machineId, jobId)) {
                     gameServer.sendMove("remove", jobId, jobIndex);
                 }
             }
@@ -75,13 +80,17 @@ public class Block : MonoBehaviour
 
             if (board.AddJob(jobId, transform.position.x - width / 2, transform.position.x + width / 2))
             {
-                transform.position = tmp;
                 gameServer.sendMove("add", jobId, board.GetJobIndex(machineId, jobId));
             } else
             {
                 transform.position = startPosition;
             }
         }
+    }
+
+    public void setPosition(float x) {
+        Vector3 pos = new Vector3(x, machinePositionY, 0.0f);
+        transform.position = pos;
     }
 
     void Update() {
@@ -97,8 +106,6 @@ public class Block : MonoBehaviour
         if (otherMachineId == machineId)
         {
             onBoard = true;
-            Vector3 tmp = collider.gameObject.GetComponent<Transform>().position;
-            machinePositionY = tmp.y;
             board = collider.gameObject.GetComponent<Board>();
         }
     }

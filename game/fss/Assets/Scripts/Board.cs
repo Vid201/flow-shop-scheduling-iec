@@ -17,6 +17,7 @@ public class Board : MonoBehaviour
 
     public int machineId;
     private static Dictionary<int, Dictionary<int, Location>> activeJobs = new Dictionary<int, Dictionary<int, Location>>();
+    public static Dictionary<int, Dictionary<int, Block>> blocks = new Dictionary<int, Dictionary<int, Block>>();
     public Text noticeText, resultText, makespanText, gameoverText;
     public int allJobs;
 
@@ -116,11 +117,12 @@ public class Board : MonoBehaviour
     }
 
     public bool AddJob(int jobId, float x1, float x2) {
-        bool free = true;
-
         if (x1 < GameHandler.BoardMinX || x2 > GameHandler.BoardMaxX) {
             return false;
         }
+
+        float prevX = 2 * GameHandler.BoardMinX;
+        int prevJobId = -1;
 
         foreach (KeyValuePair<int, Location> entry in activeJobs[machineId])
         {
@@ -131,55 +133,99 @@ public class Board : MonoBehaviour
 
             if ((x2 > entry.Value.x1 && x2 < entry.Value.x2) || (x1 < entry.Value.x2 && x1 > entry.Value.x1))
             {
-                free = false;
-                break;
+                return false;
+            }
+
+            if (x1 > entry.Value.x2 && entry.Value.x2 > prevX) {
+                prevX = entry.Value.x2;
+                prevJobId = entry.Key;
             }
         }
 
-        if (!free || CheckOtherMachines(jobId, x1, x2))
+        Dictionary<int, Location> locations = new Dictionary<int, Location>();
+
+        float x;
+
+        for (int i = 0; i < activeJobs.Count; ++i)
         {
-            return false;
+            if (prevJobId == -1) {
+                if (i == 0)
+                {
+                    x = GameHandler.BoardMinX;
+                    locations.Add(i, new Location(x, x + blocks[i][jobId].width));
+                } else
+                {
+                    locations.Add(i, new Location(locations[i-1].x2, locations[i - 1].x2 + blocks[i][jobId].width));
+                }
+            } else
+            {
+                if (i == 0) {
+                    foreach (KeyValuePair<int, Location> entry in activeJobs[0]) {
+                        if (entry.Key == prevJobId) {
+                            prevX = entry.Value.x2;
+                            break;
+                        }
+                    }
+                    locations.Add(i, new Location(prevX, prevX + blocks[i][jobId].width));
+                } else
+                {
+                    prevX = locations[i - 1].x2;
+
+                    foreach (KeyValuePair<int, Location> entry in activeJobs[i])
+                    {
+                        if (entry.Key == prevJobId)
+                        {
+                            if (entry.Value.x2 > prevX) {
+                                prevX = entry.Value.x2;
+                            }
+                            break;
+                        }
+                    }
+
+                    locations.Add(i, new Location(prevX, prevX + blocks[i][jobId].width));
+                }
+            }
         }
 
-
-        if (activeJobs[machineId].ContainsKey(jobId))
-        {
-            RemoveJob(jobId);
+        for (int i = 0; i < activeJobs.Count; ++i) {
+            foreach (KeyValuePair<int, Location> entry in activeJobs[i]) {
+                if ((locations[i].x2 > entry.Value.x1 && locations[i].x2 < entry.Value.x2) || (locations[i].x1 < entry.Value.x2 && locations[i].x1 > entry.Value.x1))
+                {
+                    return false;
+                }
+            }
         }
-        activeJobs[machineId].Add(jobId, new Location(x1, x2));
+
+        for (int i = 0; i < activeJobs.Count; ++i) {
+            if (activeJobs[i].ContainsKey(jobId))
+            {
+                RemoveJob(i, jobId);
+            }
+            activeJobs[i].Add(jobId, new Location(locations[i].x1, locations[i].x2));
+
+            blocks[i][jobId].setPosition(locations[i].x1 + blocks[i][jobId].width / 2);
+        }
 
         Validate();
 
         return true;
     }
 
-    public bool RemoveJob(int jobId) {
-        if (activeJobs[machineId].ContainsKey(jobId))
+    public bool RemoveJob(int mId, int jobId) {
+        if (activeJobs[mId].ContainsKey(jobId))
         {
-            activeJobs[machineId].Remove(jobId);
-            return true;
-            Validate();
-        }
+            activeJobs[mId].Remove(jobId);
 
-        return false;
-    }
-
-    bool CheckOtherMachines(int jobId, float x1, float x2) {
-        foreach (KeyValuePair<int, Dictionary<int, Location>> entry in activeJobs) {
-            if (entry.Key == machineId)
+            for (int i = 0; i < activeJobs.Count; ++i)
             {
-                continue;
-            }
-
-            foreach (KeyValuePair<int, Location> entry2 in entry.Value)
-            {
-                if (entry2.Key == jobId)
-                {
-                    if ((entry.Key < machineId && entry2.Value.x2 > x1) || (entry.Key > machineId && entry2.Value.x1 < x2)) {
-                        return true;
-                    }
+                if (activeJobs[i].ContainsKey(jobId)) {
+                    activeJobs[i].Remove(jobId);
+                    blocks[i][jobId].resetPosition();
                 }
             }
+
+            Validate();
+            return true;
         }
 
         return false;

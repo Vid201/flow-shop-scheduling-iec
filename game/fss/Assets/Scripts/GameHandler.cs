@@ -79,6 +79,7 @@ public class GameHandler : MonoBehaviour
             }
 
             BoardPositions.Add(i, positionY);
+            Board.blocks.Add(i, new Dictionary<int, Block>());
         }
     }
 
@@ -92,6 +93,9 @@ public class GameHandler : MonoBehaviour
                 gameObject.GetComponent<Block>().machineId = jobs[i][j].machineId;
                 gameObject.GetComponent<Block>().jobId = jobs[i][j].jobId;
                 gameObject.GetComponent<Block>().gameServer = gameServer;
+                gameObject.GetComponent<Block>().machinePositionY = BoardPositions[jobs[i][j].machineId];
+
+                Board.blocks[jobs[i][j].machineId].Add(jobs[i][j].jobId, gameObject.GetComponent<Block>());
             }
         }
     }
