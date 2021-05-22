@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from mmas import PermutationFlowShopScheduling, MaxMinAntSystem
 from multiprocessing import Process
 import numpy as np
+import os
 import time
 import uuid
 
@@ -14,8 +15,19 @@ RESULTS_FOLDER = "results/"
 games = {}
 
 
+def game_data(game_id, pfss):
+    filename = f"{RESULTS_FOLDER}{game_id}/{game_id}.data"
+
+    if not os.path.exists(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename))
+
+    with open(filename, 'w') as file:
+        file.write(
+            f"{pfss.number_of_jobs} {pfss.number_of_machines}\n{pfss.times}")
+
+
 def optimal_solution(game_id, pfss):
-    with open(f"{RESULTS_FOLDER}{game_id}.optimal", 'w') as file:
+    with open(f"{RESULTS_FOLDER}{game_id}/{game_id}.optimal", 'w') as file:
         start_time = time.time()
         sol = pfss.get_optimal_solution()
         end_time = time.time()
@@ -23,7 +35,7 @@ def optimal_solution(game_id, pfss):
 
 
 def mmas_solution(game_id):
-    with open(f"{RESULTS_FOLDER}{game_id}.mmas", 'w') as file:
+    with open(f"{RESULTS_FOLDER}{game_id}/{game_id}.mmas", 'w') as file:
         file_content = ""
 
         start_time = time.time()
@@ -35,7 +47,7 @@ def mmas_solution(game_id):
 
 
 def interactive_mmas_solution(game_id):
-    with open(f"{RESULTS_FOLDER}{game_id}.interactive", 'a') as file:
+    with open(f"{RESULTS_FOLDER}{game_id}/{game_id}.interactive", 'a') as file:
         games[game_id].run(iters=NUMBER_OF_ITERATIONS)
         sol = games[game_id].get_best_solution()
         file.write(f"{games[game_id].iter}. {sol}\n")
@@ -62,12 +74,16 @@ def game():
     pfss = PermutationFlowShopScheduling(
         number_of_machines=number_of_machines, number_of_jobs=number_of_jobs, times=times)
     mmas = MaxMinAntSystem(pfss)
-    id = str(uuid.uuid4())
+    id = str(number_of_jobs) + "-" + \
+        str(number_of_machines) + "-" + str(uuid.uuid4())
     games[id] = mmas
 
-    optimal_process = Process(target=optimal_solution,
-                              daemon=True, args=[id, pfss])
-    optimal_process.start()
+    game_data(id, pfss)
+
+    if number_of_jobs <= 10:
+        optimal_process = Process(target=optimal_solution,
+                                  daemon=True, args=[id, pfss])
+        optimal_process.start()
 
     mmas_solution(id)
     del games[id]

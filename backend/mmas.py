@@ -183,14 +183,14 @@ if __name__ == "__main__":
     print(f"Best solution found my MMAS: {mmas.get_best_solution()}")
     print(f"Time elapsed: {end_time2 - start_time2} s")
 
-    np.random.seed(SEED)
+    # np.random.seed(SEED)
 
-    start_time3 = time.time()
+    # start_time3 = time.time()
 
-    mmas2 = MaxMinAntSystem(pfss)
-    mmas2.run()
+    # mmas2 = MaxMinAntSystem(pfss)
+    # mmas2.run()
 
-    end_time3 = time.time()
+    # end_time3 = time.time()
 
-    print(f"Best solution found my MMAS: {mmas2.get_best_solution()}")
-    print(f"Time elapsed: {end_time3 - start_time3} s")
+    # print(f"Best solution found my MMAS: {mmas2.get_best_solution()}")
+    # print(f"Time elapsed: {end_time3 - start_time3} s")
