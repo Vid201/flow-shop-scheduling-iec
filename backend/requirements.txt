@@ -2,3 +2,5 @@ numpy
 sympy
 Flask
 requests
+pandas
+seaborn
