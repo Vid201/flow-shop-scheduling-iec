@@ -66,8 +66,18 @@ class MaxMinAntSystem:
         self.best_evaluation = INF
         self.tmp_best_evaluation = INF
         self.iter = 0
+        self.best_iter = 0
         self.stagnation_iter = 0
         self._init_pheromone()
+
+    def get_best_solution_result(self):
+        return self.best_solution
+    
+    def get_best_makespan(self):
+        return self.pfss.evaluate_solution(self.best_solution)
+
+    def get_best_iter(self):
+        return self.best_iter
 
     def get_best_solution(self):
         return self.best_solution, self.pfss.evaluate_solution(self.best_solution)
@@ -131,6 +141,7 @@ class MaxMinAntSystem:
             if evaluation < self.tmp_best_evaluation:
                 self.best_solution = solution
                 self.tmp_best_evaluation = evaluation
+                self.best_iter = self.iter
 
             solutions.append(solution)
             evaluations.append(evaluation)
@@ -142,7 +153,7 @@ class MaxMinAntSystem:
         if iters is None:
             while True:
                 self._run_iteration()
-                print(self.iter, self.get_best_solution())
+                # print(self.iter, self.get_best_solution())
                 if self.iter > self.max_iter:
                     break
         else:
