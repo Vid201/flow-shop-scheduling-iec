@@ -1,6 +1,6 @@
-# flow-shop-scheduling-iml
+# flow-shop-scheduling-iec
 
-Conference Paper - Interactive Machine Learning Approach to Permutation Flow Shop Scheduling Problem.
+Conference Paper - Interactive Evolutionary Computation Approach to Permutation Flow Shop Scheduling Problem.
 
 Paper: not yet available
 
