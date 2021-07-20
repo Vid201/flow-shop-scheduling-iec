@@ -8,4 +8,5 @@ Paper: not yet available
 
 This repository contains code for backend server (Python), video game (Unity - C#) and interactive MMAS algorithm (Python).
 
+Gameplay of the video game:
 ![Gameplay](gameplay.png)
