@@ -10,3 +10,5 @@ This repository contains code for backend server (Python), video game (Unity - C
 
 Gameplay of the video game:
 ![Gameplay](gameplay.png)
+
+Implementation of genetic algorithm from analysis found here: https://github.com/suyunu/Flow-Shop-Scheduling
