@@ -2,7 +2,7 @@
 
 Conference Paper - Interactive Evolutionary Computation Approach to Permutation Flow Shop Scheduling Problem.
 
-Paper: not yet available
+Paper: https://www.researchgate.net/publication/354566327_Interactive_Evolutionary_Computation_Approach_to_Permutation_Flow_Shop_Scheduling_Problem
 
 # Code
 
